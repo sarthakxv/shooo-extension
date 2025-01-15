@@ -8,8 +8,7 @@ A simple Chrome extension to block distracting websites and redirect them to you
 - Lightweight and fast
 
 ## Installation
-****
-### From Source
+
 1. Clone this repository
 
 ```bash
@@ -33,7 +32,7 @@ npm run build
 - Click "Load unpacked"
 - Select the `dist` folder from this project
 
-### Run locally
+## Run locally
 
 Run development server (for UI development):
 ```bash
