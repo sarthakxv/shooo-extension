@@ -33,7 +33,7 @@ npm run build
 - Click "Load unpacked"
 - Select the `dist` folder from this project
 
-### Development 💻
+### Run locally
 
 Run development server (for UI development):
 ```bash
@@ -44,11 +44,3 @@ Build in watch mode (for testing in Chrome):
 ```bash
 npm run build:watch
 ```
-
-
-## Usage 🚀
-
-1. Click the FocusBlock icon in your Chrome toolbar
-2. Set your preferred redirect URL (defaults to Google)
-3. Add websites or keywords you want to block
-4. Try accessing a blocked site - you'll be redirected automatically
