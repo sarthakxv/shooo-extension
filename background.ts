@@ -1,22 +1,16 @@
-interface BlockerConfig {
-  blockedUrls: string[];
-  redirectUrl: string;
-}
+import { StorageService } from './storage/storage';
 
 chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
-  const { blockedUrls, redirectUrl } = await chrome.storage.sync.get({
-    blockedUrls: [],
-    redirectUrl: 'https://google.com'
-  }) as BlockerConfig;
-
+  const settings = await StorageService.getSettings();
+  
   const url = new URL(details.url);
-  const shouldBlock = blockedUrls.some(blockedUrl => 
+  const shouldBlock = settings.blockedUrls.some(blockedUrl => 
     url.hostname.includes(blockedUrl) || url.pathname.includes(blockedUrl)
   );
 
   if (shouldBlock) {
     chrome.tabs.update(details.tabId, {
-      url: redirectUrl
+      url: settings.redirectUrl
     });
   }
 });

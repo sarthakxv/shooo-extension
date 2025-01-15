@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
+import { StorageService, BlockerSettings } from '../storage/storage';
 import './popup.css';
 
 interface BlockerConfig {
@@ -13,43 +14,40 @@ const Popup: React.FC = () => {
   const [newUrl, setNewUrl] = useState<string>('');
 
   useEffect(() => {
-    // Load saved settings
-    chrome.storage.sync.get({
-      blockedUrls: [],
-      redirectUrl: 'https://google.com'
-    }, (items: BlockerConfig) => {
-      setBlockedUrls(items.blockedUrls);
-      setRedirectUrl(items.redirectUrl);
-    });
+    loadSettings();
   }, []);
 
-  const saveSettings = (newBlockedUrls: string[], newRedirectUrl: string) => {
-    chrome.storage.sync.set({
-      blockedUrls: newBlockedUrls,
-      redirectUrl: newRedirectUrl
-    });
+  const loadSettings = async () => {
+    const settings = await StorageService.getSettings();
+    setBlockedUrls(settings.blockedUrls);
+    setRedirectUrl(settings.redirectUrl);
   };
 
-  const handleAddUrl = () => {
+  const handleAddUrl = async () => {
     if (newUrl) {
-      const updatedUrls = [...blockedUrls, newUrl];
+      const updatedUrls = await StorageService.addBlockedUrl(newUrl);
       setBlockedUrls(updatedUrls);
       setNewUrl('');
-      saveSettings(updatedUrls, redirectUrl);
     }
   };
 
-  const handleRemoveUrl = (urlToRemove: string) => {
-    const updatedUrls = blockedUrls.filter(url => url !== urlToRemove);
+  const handleRemoveUrl = async (urlToRemove: string) => {
+    const updatedUrls = await StorageService.removeBlockedUrl(urlToRemove);
     setBlockedUrls(updatedUrls);
-    saveSettings(updatedUrls, redirectUrl);
   };
 
-  const handleRedirectUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleRedirectUrlChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const newRedirectUrl = e.target.value;
     setRedirectUrl(newRedirectUrl);
-    saveSettings(blockedUrls, newRedirectUrl);
+    await StorageService.updateRedirectUrl(newRedirectUrl);
   };
+
+  // const saveSettings = (newBlockedUrls: string[], newRedirectUrl: string) => {
+  //   chrome.storage.sync.set({
+  //     blockedUrls: newBlockedUrls,
+  //     redirectUrl: newRedirectUrl
+  //   });
+  // };
 
   return (
     <div className="popup">
@@ -61,7 +59,7 @@ const Popup: React.FC = () => {
           type="url" 
           value={redirectUrl}
           onChange={handleRedirectUrlChange}
-          placeholder="https://example.com"
+          placeholder="https://google.com"
         />
       </div>
 
